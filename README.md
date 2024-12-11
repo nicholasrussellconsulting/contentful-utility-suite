@@ -1,1 +1,3 @@
-Init
+### Contentful Utility Suite
+
+Initialized!

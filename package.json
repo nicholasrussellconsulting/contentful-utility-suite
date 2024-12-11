@@ -1,0 +1,28 @@
+{
+    "name": "contentful-utility-suite",
+    "version": "1.0.0",
+    "description": "Init",
+    "scripts": {
+        "start": "tsx src/index.ts",
+        "build": "tsc",
+        "format": "prettier --write .",
+        "check-types": "tsc --noEmit",
+        "prepublishOnly": "npm run build",
+        "test-publish": "npm run build && npm pack && node scripts/test-publish.js"
+    },
+    "bin": {
+        "contentful-utility-suite": "./dist/index.js"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "prettier": "^3.4.2",
+        "tsx": "^4.19.2",
+        "typescript": "^5.7.2"
+    },
+    "dependencies": {
+        "csv-parser": "^3.0.0",
+        "inquirer": "^12.2.0"
+    },
+    "type": "module"
+}
