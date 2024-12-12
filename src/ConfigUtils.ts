@@ -15,7 +15,7 @@ const updateOrCreateConfig = (json: ConfigShape): APIWrapper<undefined> => {
             errorMessage: (e as Error).message,
         };
     }
-    return Utils.createFileSync({ content: JSON.stringify(json), filePath: CONFIG_PATH });
+    return Utils.createFileSync({ content: stringJSON, filePath: CONFIG_PATH });
 };
 
 const checkIfConfigExists = (): boolean => {
@@ -38,10 +38,34 @@ const getConfigFileContents = (): APIWrapper<ConfigShape> => {
     }
 };
 
-const createNewConfig = async (): Promise<ConfigShape> => {
+const createConfigSpace = async (): Promise<Space> => {
     const space: Partial<Space> = {};
     while (true) {
-        space.spaceID = await Utils.inputPrompt({ message: `Please enter the "Space ID" of your Contentful Space` });
+        space.name = await Utils.inputPrompt({
+            message: `Please enter a name for the Contentful Space you will be using`,
+            defaultValue: "Default Space",
+            validate: (s) => {
+                if (s.length < 1) {
+                    return "Please enter a value";
+                }
+                if (projectConfig?.spaces.find((space) => space.name === s)) {
+                    return "A Space with that name already exists";
+                }
+                return true;
+            },
+        });
+        space.spaceID = await Utils.inputPrompt({
+            message: `Please enter the "Space ID" of your Contentful Space`,
+            validate: (s) => {
+                if (s.length !== 12) {
+                    return "Space IDs are 12 characters long";
+                }
+                if (projectConfig?.spaces.find((space) => space.spaceID === s)) {
+                    return "A Space with that ID already exists";
+                }
+                return true;
+            },
+        });
         space.managementToken = await Utils.inputPrompt({
             message: `Please enter a Management Token that has all environment/alias permissions for this space`,
         });
@@ -53,16 +77,102 @@ const createNewConfig = async (): Promise<ConfigShape> => {
             break;
         }
     }
-    updateOrCreateConfig({ spaces: [space as Space] });
+    return space as Space;
+};
+
+const createAndWriteConfigSpace = async () => {
+    const newSpace = await createConfigSpace();
+    projectConfig = {
+        spaces: [...(projectConfig?.spaces || []), newSpace],
+    };
+    updateOrCreateConfig(projectConfig);
+};
+
+const removeConfigSpace = async (): Promise<APIWrapper<undefined>> => {
+    if ((projectConfig?.spaces.length || 0) < 2) {
+        console.log(chalk.yellow("You only have one Space in your config. You cannot remove it."));
+        return {
+            error: false,
+        };
+    }
+    const choice = await Utils.choicesPrompt({
+        message: "Which Space would you like to remove?",
+        choices: [...(projectConfig?.spaces.map((space) => space.name) || []), "Return"],
+    });
+    if (choice === "Return") {
+        return {
+            error: false,
+        };
+    }
+    const index = projectConfig?.spaces.findIndex((space) => space.name === choice) || -1;
+    if (index === -1) {
+        throw new Error("Unexpected issue occurred most likely due to a bug in the code");
+    }
+    projectConfig = {
+        spaces: [...(projectConfig?.spaces?.slice(0, index) || []), ...(projectConfig?.spaces.slice(index + 1) || [])],
+    };
+    updateOrCreateConfig(projectConfig);
     return {
-        spaces: [space as Space],
+        error: false,
+    };
+};
+
+const updateConfigSpace = async (): Promise<APIWrapper<undefined>> => {
+    const choice = await Utils.choicesPrompt({
+        message: "Which Space would you like to update?",
+        choices: [...(projectConfig?.spaces.map((space) => space.name) || []), "Return"],
+    });
+    if (choice === "Return") {
+        return {
+            error: false,
+        };
+    }
+    const index = projectConfig?.spaces.findIndex((space) => space.name === choice) ?? -1;
+    if (index === -1) {
+        throw new Error("Unexpected issue occurred most likely due to a bug in the code");
+    }
+    const chosenSpace = projectConfig?.spaces[index] as Space;
+    const updatingSpace: Partial<Space> = { ...chosenSpace };
+    while (true) {
+        updatingSpace.managementToken = await Utils.inputPrompt({
+            message: `Update Management Token`,
+            defaultValue: updatingSpace.managementToken,
+        });
+        updatingSpace.deliveryToken = await Utils.inputPrompt({
+            message: `Update Delivery Token`,
+            defaultValue: updatingSpace.deliveryToken,
+        });
+        const confirmed = await Utils.yesNoPrompt({
+            question: `Confirm you would like to save these updates: ${JSON.stringify(updatingSpace)}`,
+        });
+        if (confirmed) {
+            const updatedConfig = {
+                spaces: [
+                    ...(projectConfig?.spaces?.slice(0, index) || []),
+                    updatingSpace as Space,
+                    ...(projectConfig?.spaces.slice(index + 1) || []),
+                ],
+            };
+            projectConfig = updatedConfig;
+            updateOrCreateConfig(updatedConfig);
+            break;
+        } else {
+            break;
+        }
+    }
+    return {
+        error: false,
     };
 };
 
 const checkAndInitConfig = async () => {
     if (!checkIfConfigExists()) {
         console.log(chalk.yellow("You do not have a config file. You will be prompted to create one now."));
-        projectConfig = await createNewConfig();
+        const initSpace = await createConfigSpace();
+        updateOrCreateConfig({ spaces: [initSpace] });
+        projectConfig = {
+            spaces: [initSpace],
+        };
     } else {
         const configRes = getConfigFileContents();
         if (configRes.error) {
@@ -72,6 +182,19 @@ const checkAndInitConfig = async () => {
     }
 };
 
+const selectSpace = async (): Promise<Space> => {
+    const spaceChoice = await Utils.choicesPrompt({
+        message: "Please choose a space",
+        choices: projectConfig?.spaces.map((space) => space.name) || [],
+    });
+    return projectConfig?.spaces.find((space) => space.name === spaceChoice) as Space;
+};
+
 export const ConfigUtils = {
     checkAndInitConfig,
+    createConfigSpace,
+    removeConfigSpace,
+    updateConfigSpace,
+    createAndWriteConfigSpace,
+    selectSpace,
 };
