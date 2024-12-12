@@ -19,6 +19,12 @@ try {
     // Run a basic CLI command to test
     console.log("Testing the CLI...");
     execSync(`contentful-utility-suite`, { stdio: "inherit" });
+
+    // Uninstall the tarball globally
+    console.log("Uninstalling tarball...");
+    execSync(`npm uninstall -g contentful-utility-suite`, { stdio: "inherit" });
+
+    console.log("Test publish completed successfully!");
 } catch (error) {
     console.error("Error during test-publish:", error.message);
     process.exit(1);
