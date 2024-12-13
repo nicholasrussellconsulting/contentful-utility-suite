@@ -9,33 +9,15 @@ import { createContentExport } from "../createContentExport";
 
 export const MigrationProcess = async () => {
     const space = await ConfigUtils.selectSpace();
-    const environmentDataRes = await ContentfulManagementAPI.getAllEnvironments(space);
-    if (environmentDataRes.error) {
-        console.log(chalk.red(`There was an error fetching environment data from Contentful: ${environmentDataRes.errorMessage}`));
+    const environmentSelectionRes = await Utils.selectEnvironmentIDs({ space });
+    if (environmentSelectionRes.error) {
+        console.log(chalk.red(environmentSelectionRes.errorMessage));
         return;
     }
-    const envOrAliasChoice = await Utils.choicesPrompt({
-        message: "Would you like to use environments or aliases?",
-        choices: ["Environments", "Aliases"],
-    });
-    let environmentChoices: string[] = [];
-    if (envOrAliasChoice === "Aliases") {
-        const aliases = (environmentDataRes.res?.items
-            .map((item) => item.sys.aliases?.map((alias) => alias.sys.id))
-            .flat()
-            .filter((alias) => !!alias) || []) as string[];
-        environmentChoices = Array.from(new Set(aliases));
-    } else {
-        const environments = environmentDataRes.res?.items.map((item) => item.name);
-        environmentChoices = Array.from(new Set(environments));
-    }
-    const sourceEnvID = await Utils.choicesPrompt({ choices: environmentChoices, message: "Select source environment" });
-    const indexOfSource = environmentChoices.findIndex((env) => env === sourceEnvID);
-    if (indexOfSource === -1) {
-        throw new Error(`Unexpected error attempting to choose environments. This is most likely a code error.`);
-    }
-    const remainingChoices = [...environmentChoices.slice(0, indexOfSource), ...environmentChoices.slice(indexOfSource + 1)];
-    const targetEnvID = await Utils.choicesPrompt({ choices: remainingChoices, message: "Select target environment" });
+    const { sourceEnvID, targetEnvID } = {
+        sourceEnvID: environmentSelectionRes.res?.id as string,
+        targetEnvID: environmentSelectionRes.res?.id2 as string,
+    };
     const envConfirmation = await Utils.yesNoPrompt({
         question: `Please confirm you are migrating content from ${sourceEnvID} into ${targetEnvID}`,
     });

@@ -55,3 +55,36 @@ export type LinkSys = {
     linkType: string;
     id: string;
 };
+
+export type FetchGraphQLParams = {
+    query: string;
+    space: Space;
+    envID: string;
+};
+
+export type GraphQLError = {
+    message: string;
+};
+
+export type GraphQLResponse<T> = {
+    data?: {
+        [key: string]: {
+            items: T[];
+            total?: number;
+        };
+    };
+    errors?: GraphQLError[];
+};
+
+export type GraphQLNode = {
+    sys: {
+        id: string;
+    };
+};
+
+export type GQLFieldsJSON = {
+    collectionsKey: string;
+    fields: string[];
+};
+
+export type GQLFieldsJSONWithFileName = GQLFieldsJSON & { fileName: string };

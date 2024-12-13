@@ -1,9 +1,11 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, promises as fsPromises } from "fs";
 import { dirname } from "path";
-import { APIWrapper } from "./types";
+import { APIWrapper, FetchGraphQLParams, GQLFieldsJSON, GQLFieldsJSONWithFileName, GraphQLNode, GraphQLResponse, Space } from "./types";
 import inquirer from "inquirer";
 import { readdirSync, statSync } from "fs";
 import { join } from "path";
+import { GQL_FIELDS_DIR, GQL_OUTPUT_DIR } from "./constants";
+import { ContentfulManagementAPI } from "./ContentfulManagementAPI";
 
 const fileExistsSync = (filePath: string): boolean => {
     return existsSync(filePath);
@@ -119,6 +121,150 @@ const getMostRecentFileInDir = (directory: string): APIWrapper<string> => {
     }
 };
 
+export const getValidGraphQLFieldFiles = async (): Promise<APIWrapper<GQLFieldsJSONWithFileName[]>> => {
+    mkdirSync(GQL_FIELDS_DIR, { recursive: true });
+    try {
+        const files = readdirSync(GQL_FIELDS_DIR);
+        const gqlFiles = files.filter((file) => file.endsWith(".json"));
+        const promises: Promise<GQLFieldsJSONWithFileName>[] = gqlFiles.map(async (file) => {
+            const filePath = join(GQL_FIELDS_DIR, file);
+            const content = await fsPromises.readFile(filePath, "utf-8");
+            const parsed = JSON.parse(content) as GQLFieldsJSON;
+            if (!parsed.collectionsKey || !parsed.fields.length) {
+                throw new Error("failed");
+            }
+            return {
+                ...parsed,
+                fileName: file,
+            };
+        });
+
+        const validFiles = (await Promise.allSettled(promises))
+            .filter((promise) => promise.status === "fulfilled")
+            .map((promise) => promise.value);
+
+        return {
+            error: false,
+            res: validFiles,
+        };
+    } catch (error) {
+        return {
+            error: true,
+            errorMessage: (error as Error).message,
+        };
+    }
+};
+
+const initGQLFieldsDir = (): APIWrapper<undefined> => {
+    mkdirSync(GQL_FIELDS_DIR, { recursive: true });
+    const example: GQLFieldsJSON = {
+        collectionsKey: "pageCollection",
+        fields: ["name", "slug"],
+    };
+    try {
+        writeFileSync(GQL_FIELDS_DIR + "example.json", JSON.stringify(example));
+    } catch (e) {
+        return {
+            error: true,
+            errorMessage: (e as Error).message,
+        };
+    }
+    return {
+        error: false,
+    };
+};
+
+async function fetchGraphQL<T>({ space, query, envID }: FetchGraphQLParams): Promise<GraphQLResponse<T>> {
+    const res = await fetch(`https://graphql.contentful.com/content/v1/spaces/${space.spaceID}/environments/${envID}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${space.deliveryToken}`,
+        },
+        body: JSON.stringify({ query }),
+    });
+    return (await res.json()) as GraphQLResponse<T>;
+}
+
+export type SelectEnvironmentIDsParams = {
+    space: Space;
+    selectOne?: boolean;
+};
+
+const selectEnvironmentIDs = async ({
+    space,
+    selectOne,
+}: SelectEnvironmentIDsParams): Promise<APIWrapper<{ id: string; id2?: string }>> => {
+    const environmentDataRes = await ContentfulManagementAPI.getAllEnvironments(space);
+    if (environmentDataRes.error) {
+        return {
+            error: true,
+            errorMessage: `There was an error fetching environment data from Contentful: ${environmentDataRes.errorMessage}`,
+        };
+    }
+    const envOrAliasChoice = await Utils.choicesPrompt({
+        message: "Would you like to use environments or aliases?",
+        choices: ["Environments", "Aliases"],
+    });
+    let environmentChoices: string[] = [];
+    if (envOrAliasChoice === "Aliases") {
+        const aliases = (environmentDataRes.res?.items
+            .map((item) => item.sys.aliases?.map((alias) => alias.sys.id))
+            .flat()
+            .filter((alias) => !!alias) || []) as string[];
+        environmentChoices = Array.from(new Set(aliases));
+    } else {
+        const environments = environmentDataRes.res?.items.map((item) => item.name);
+        environmentChoices = Array.from(new Set(environments));
+    }
+    const sourceEnvID = await Utils.choicesPrompt({
+        choices: environmentChoices,
+        message: selectOne ? "Select an environment" : "Select source environment",
+    });
+    if (selectOne) {
+        return {
+            error: false,
+            res: {
+                id: sourceEnvID,
+            },
+        };
+    }
+    const indexOfSource = environmentChoices.findIndex((env) => env === sourceEnvID);
+    if (indexOfSource === -1) {
+        throw new Error(`Unexpected error attempting to choose environments. This is most likely a code error.`);
+    }
+    const remainingChoices = [...environmentChoices.slice(0, indexOfSource), ...environmentChoices.slice(indexOfSource + 1)];
+    const targetEnvID = await Utils.choicesPrompt({ choices: remainingChoices, message: "Select target environment" });
+    return {
+        error: false,
+        res: {
+            id: sourceEnvID,
+            id2: targetEnvID,
+        },
+    };
+};
+
+const writeGraphQLResponse = (content: GraphQLNode[], collectionsKey: string): APIWrapper<undefined> => {
+    mkdirSync(GQL_OUTPUT_DIR, { recursive: true });
+
+    const epoch = Math.floor(Date.now() / 1000);
+    const fileName = `${epoch}-${collectionsKey}.json`;
+    const filePath = join(GQL_OUTPUT_DIR, fileName);
+
+    const fileContent = JSON.stringify(content, null, 2);
+    try {
+        writeFileSync(filePath, fileContent, "utf-8");
+    } catch (e) {
+        return {
+            error: true,
+            errorMessage: (e as Error).message,
+        };
+    }
+    return {
+        error: false,
+    };
+};
+
 export const Utils = {
     fileExistsSync,
     createFileSync,
@@ -127,4 +273,9 @@ export const Utils = {
     inputPrompt,
     readFile,
     getMostRecentFileInDir,
+    getValidGraphQLFieldFiles,
+    fetchGraphQL,
+    initGQLFieldsDir,
+    selectEnvironmentIDs,
+    writeGraphQLResponse,
 };
