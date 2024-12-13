@@ -244,10 +244,10 @@ const selectEnvironmentIDs = async ({
     };
 };
 
-const writeGraphQLResponse = (content: GraphQLNode[], collectionsKey: string): APIWrapper<undefined> => {
+const writeGraphQLResponse = (content: GraphQLNode[], collectionsKey: string): APIWrapper<string> => {
     mkdirSync(GQL_OUTPUT_DIR, { recursive: true });
 
-    const epoch = Math.floor(Date.now() / 1000);
+    const epoch = Math.floor(Date.now());
     const fileName = `${epoch}-${collectionsKey}.json`;
     const filePath = join(GQL_OUTPUT_DIR, fileName);
 
@@ -262,6 +262,7 @@ const writeGraphQLResponse = (content: GraphQLNode[], collectionsKey: string): A
     }
     return {
         error: false,
+        res: filePath,
     };
 };
 

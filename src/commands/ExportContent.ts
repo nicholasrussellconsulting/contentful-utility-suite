@@ -55,8 +55,9 @@ export const ExportContent = async () => {
                 const writeResponse = Utils.writeGraphQLResponse(queryRes.res || [], gqlFile.collectionsKey);
                 if (writeResponse.error) {
                     console.log(chalk.red(`Failed to write GraphQL content to file: ${writeResponse.errorMessage}`));
+                } else {
+                    console.log(chalk.green(`Successfully created content export at: ${writeResponse.res}`));
                 }
-                break;
             }
         }
     }
