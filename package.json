@@ -1,7 +1,7 @@
 {
     "name": "contentful-utility-suite",
     "version": "1.0.0",
-    "description": "Init",
+    "description": "Suite of utilities for Contentful CMS",
     "scripts": {
         "start": "tsx src/index.ts",
         "build": "tsc",
@@ -13,7 +13,7 @@
     "bin": {
         "contentful-utility-suite": "./dist/index.js"
     },
-    "author": "",
+    "author": "Nicholas Russell Consulting",
     "license": "ISC",
     "devDependencies": {
         "prettier": "^3.4.2",
