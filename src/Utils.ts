@@ -1,11 +1,11 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync, promises as fsPromises } from "fs";
 import { dirname } from "path";
-import { APIWrapper, FetchGraphQLParams, GQLFieldsJSON, GQLFieldsJSONWithFileName, GraphQLNode, GraphQLResponse, Space } from "./types";
+import { APIWrapper, FetchGraphQLParams, GQLFieldsJSON, GQLFieldsJSONWithFileName, GraphQLNode, GraphQLResponse, Space } from "./types.js";
 import inquirer from "inquirer";
 import { readdirSync, statSync } from "fs";
 import { join } from "path";
-import { GQL_FIELDS_DIR, GQL_OUTPUT_DIR } from "./constants";
-import { ContentfulManagementAPI } from "./ContentfulManagementAPI";
+import { GQL_FIELDS_DIR, GQL_OUTPUT_DIR } from "./constants.js";
+import { ContentfulManagementAPI } from "./ContentfulManagementAPI.js";
 
 const fileExistsSync = (filePath: string): boolean => {
     return existsSync(filePath);

@@ -1,8 +1,8 @@
 import chalk from "chalk";
-import { Utils } from "../Utils";
-import { ConfigUtils } from "../ConfigUtils";
-import { GQL_FIELDS_DIR } from "../constants";
-import { runQuery } from "../runQuery";
+import { Utils } from "../Utils.js";
+import { ConfigUtils } from "../ConfigUtils.js";
+import { GQL_FIELDS_DIR } from "../constants.js";
+import { runQuery } from "../runQuery.js";
 
 export const ExportContent = async () => {
     const initGQLDirectoryRes = Utils.initGQLFieldsDir();

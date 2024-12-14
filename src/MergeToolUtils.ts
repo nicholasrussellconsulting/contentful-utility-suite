@@ -1,8 +1,8 @@
-import { DIFF_FOLDER } from "./constants";
-import { APIWrapper, Space } from "./types";
+import { DIFF_FOLDER } from "./constants.js";
+import { APIWrapper, Space } from "./types.js";
 import { mkdirSync } from "fs";
 import { execSync, spawnSync } from "child_process";
-import { Utils } from "./Utils";
+import { Utils } from "./Utils.js";
 
 export type SpaceAndTargetSource = {
     space: Space;

@@ -1,10 +1,10 @@
 import chalk from "chalk";
-import { APIWrapper, ConfigShape, Space } from "./types";
-import { Utils } from "./Utils";
+import { APIWrapper, ConfigShape, Space } from "./types.js";
+import { Utils } from "./Utils.js";
 import { mkdirSync } from "fs";
 import { join } from "path";
 import { homedir } from "os";
-import { APP_NAME } from "./constants";
+import { APP_NAME } from "./constants.js";
 
 const CONFIG_DIR = process.platform === "win32" ? join(homedir(), "AppData", "Roaming", APP_NAME) : join(homedir(), ".config", APP_NAME);
 mkdirSync(CONFIG_DIR, { recursive: true });

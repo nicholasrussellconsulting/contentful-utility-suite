@@ -1,11 +1,10 @@
 import chalk from "chalk";
-import { ConfigUtils } from "../ConfigUtils";
-import { ContentfulManagementAPI } from "../ContentfulManagementAPI";
-import { Utils } from "../Utils";
-import { MergeToolUtils } from "../MergeToolUtils";
-import { CONTENT_TYPE_MIGRATION_DIR } from "../constants";
-import { importContent } from "../importContent";
-import { createContentExport } from "../createContentExport";
+import { ConfigUtils } from "../ConfigUtils.js";
+import { Utils } from "../Utils.js";
+import { MergeToolUtils } from "../MergeToolUtils.js";
+import { CONTENT_TYPE_MIGRATION_DIR } from "../constants.js";
+import { importContent } from "../importContent.js";
+import { createContentExport } from "../createContentExport.js";
 
 export const MigrationProcess = async () => {
     const space = await ConfigUtils.selectSpace();

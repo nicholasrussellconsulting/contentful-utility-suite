@@ -1,5 +1,5 @@
 import * as contentful from "contentful-management";
-import { Space } from "./types";
+import { Space } from "./types.js";
 
 export type RecursivelyGatherSystemIDsRes = {
     entries: string[];

@@ -1,7 +1,7 @@
-import { EXPORT_ALL_CONTENT_FILE_NAME, EXPORT_CONTENT_DIR } from "./constants";
-import { APIWrapper, ContentExport, Space } from "./types";
+import { EXPORT_ALL_CONTENT_FILE_NAME, EXPORT_CONTENT_DIR } from "./constants.js";
+import { APIWrapper, ContentExport, Space } from "./types.js";
 import { spawnSync } from "child_process";
-import { Utils } from "./Utils";
+import { Utils } from "./Utils.js";
 import { mkdirSync } from "fs";
 
 export type ExportSpaceParams = {

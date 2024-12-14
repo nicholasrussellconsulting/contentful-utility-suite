@@ -1,5 +1,5 @@
-import { CONTENTFUL_API_URL } from "./constants";
-import { APIWrapper, EnvironmentResponse, Space } from "./types";
+import { CONTENTFUL_API_URL } from "./constants.js";
+import { APIWrapper, EnvironmentResponse, Space } from "./types.js";
 
 const getAllEnvironments = async (space: Space): Promise<APIWrapper<EnvironmentResponse>> => {
     try {

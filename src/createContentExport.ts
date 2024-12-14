@@ -1,8 +1,8 @@
-import { recursivelyGatherSystemIDs } from "./recursivelyGatherSystemIDs";
+import { recursivelyGatherSystemIDs } from "./recursivelyGatherSystemIDs.js";
 import { spawnSync } from "child_process";
-import { APIWrapper, Space } from "./types";
-import { Utils } from "./Utils";
-import { EXPORT_CONTENT_DIR, EXPORT_CONTENT_FILE_NAME } from "./constants";
+import { APIWrapper, Space } from "./types.js";
+import { Utils } from "./Utils.js";
+import { EXPORT_CONTENT_DIR, EXPORT_CONTENT_FILE_NAME } from "./constants.js";
 import { mkdirSync } from "fs";
 
 export type CreateContentExportParams = {

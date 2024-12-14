@@ -1,5 +1,5 @@
 import { spawnSync } from "child_process";
-import { Space } from "./types";
+import { Space } from "./types.js";
 
 export type ImportContentParams = {
     space: Space;

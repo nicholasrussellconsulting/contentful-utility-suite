@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 import chalk from "chalk";
-import { ConfigUtils } from "./ConfigUtils";
-import { Utils } from "./Utils";
-import { UpdateConfig } from "./commands/UpdateConfig";
-import { MigrationProcess } from "./commands/MigrationProcess";
-import { ExportContent } from "./commands/ExportContent";
-import { SearchContent } from "./commands/SearchContent";
+import { ConfigUtils } from "./ConfigUtils.js";
+import { Utils } from "./Utils.js";
+import { UpdateConfig } from "./commands/UpdateConfig.js";
+import { MigrationProcess } from "./commands/MigrationProcess.js";
+import { ExportContent } from "./commands/ExportContent.js";
+import { SearchContent } from "./commands/SearchContent.js";
 
 const commandIndex = {
     "Update Config": UpdateConfig,

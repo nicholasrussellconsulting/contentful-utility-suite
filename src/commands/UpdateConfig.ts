@@ -1,5 +1,5 @@
-import { ConfigUtils } from "../ConfigUtils";
-import { Utils } from "../Utils";
+import { ConfigUtils } from "../ConfigUtils.js";
+import { Utils } from "../Utils.js";
 
 export const UpdateConfig = async () => {
     while (true) {

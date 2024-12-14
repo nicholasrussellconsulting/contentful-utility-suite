@@ -1,5 +1,5 @@
-import { CONTENTFUL_URL } from "./constants";
-import { Entry } from "./types";
+import { CONTENTFUL_URL } from "./constants.js";
+import { Entry } from "./types.js";
 
 export type SearchEntriesResponse = {
     entryId: string;

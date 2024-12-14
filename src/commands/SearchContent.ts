@@ -1,10 +1,10 @@
 import chalk from "chalk";
-import { ConfigUtils } from "../ConfigUtils";
-import { exportFullSpace } from "../exportFullSpace";
-import { Utils } from "../Utils";
-import { searchEntries } from "../searchEntries";
+import { ConfigUtils } from "../ConfigUtils.js";
+import { exportFullSpace } from "../exportFullSpace.js";
+import { Utils } from "../Utils.js";
+import { searchEntries } from "../searchEntries.js";
 import { writeFileSync, mkdirSync } from "fs";
-import { SEARCH_RESULT_DIFF } from "../constants";
+import { SEARCH_RESULT_DIFF } from "../constants.js";
 
 export const SearchContent = async () => {
     mkdirSync(SEARCH_RESULT_DIFF, { recursive: true });

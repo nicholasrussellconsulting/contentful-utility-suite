@@ -1,5 +1,5 @@
-import { APIWrapper, GQLFieldsJSON, GraphQLNode, Space } from "./types";
-import { Utils } from "./Utils";
+import { APIWrapper, GQLFieldsJSON, GraphQLNode, Space } from "./types.js";
+import { Utils } from "./Utils.js";
 
 export type GetLocationContentParams = {
     envID: string;
