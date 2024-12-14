@@ -12,7 +12,7 @@ const commandIndex = {
     "Update Config": UpdateConfig,
     "Migrate Selected Content": MigrationProcess,
     "Export a Content Collection": ExportContent,
-    "Search Content": SearchContent,
+    "Search All Content": SearchContent,
     Exit: () => process.exit(0),
 };
 
@@ -21,7 +21,7 @@ async function main() {
     await ConfigUtils.checkAndInitConfig();
     while (true) {
         const choice = await Utils.choicesPrompt({
-            choices: ["Update Config", "Migrate Selected Content", "Export a Content Collection", "Search Content", "Exit"],
+            choices: ["Update Config", "Migrate Selected Content", "Export a Content Collection", "Search All Content", "Exit"],
             message: "Choose a command",
         });
         await commandIndex[choice]();

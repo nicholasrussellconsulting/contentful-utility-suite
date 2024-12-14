@@ -88,3 +88,72 @@ export type GQLFieldsJSON = {
 };
 
 export type GQLFieldsJSONWithFileName = GQLFieldsJSON & { fileName: string };
+
+export type ContentExport = {
+    entries: Entry[];
+};
+
+export type Entry = {
+    metadata: Metadata;
+    sys: SystemFields;
+    fields: Fields;
+};
+
+export type Metadata = {
+    tags: Tag[];
+    concepts: Concept[];
+};
+
+export type Tag = {
+    sys?: {
+        id: string;
+        linkType: string;
+        type: string;
+    };
+};
+
+export type Concept = {
+    sys?: {
+        id: string;
+        linkType: string;
+        type: string;
+    };
+};
+
+export type SystemFields = {
+    space: Link;
+    id: string;
+    type: string;
+    createdAt: string;
+    updatedAt: string;
+    environment: Link;
+    publishedVersion?: number;
+    publishedAt?: string;
+    firstPublishedAt?: string;
+    createdBy: Link;
+    updatedBy: Link;
+    publishedCounter?: number;
+    version?: number;
+    publishedBy?: Link;
+    fieldStatus?: FieldStatus;
+    contentType: Link;
+    urn: string;
+};
+
+export type Link = {
+    sys: LinkSys;
+};
+
+export type FieldStatus = {
+    [key: string]: {
+        [locale: string]: string;
+    };
+};
+
+export type Fields = {
+    [key: string]: LocalizedField<any>;
+};
+
+export type LocalizedField<T> = {
+    [locale: string]: T;
+};

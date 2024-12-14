@@ -8,7 +8,7 @@ let projectConfig: ConfigShape | undefined = undefined;
 const updateOrCreateConfig = (json: ConfigShape): APIWrapper<undefined> => {
     let stringJSON: string | undefined = undefined;
     try {
-        stringJSON = JSON.stringify(json);
+        stringJSON = JSON.stringify(json, null, 2);
     } catch (e) {
         return {
             error: true,
@@ -72,7 +72,9 @@ const createConfigSpace = async (): Promise<Space> => {
         space.deliveryToken = await Utils.inputPrompt({
             message: `Please enter a Delivery Token that has all environment/alias permissions for this space`,
         });
-        const confirmed = await Utils.yesNoPrompt({ question: `Confirm the following config is correct: ${JSON.stringify(space)}` });
+        const confirmed = await Utils.yesNoPrompt({
+            question: `Confirm the following config is correct:\n ${JSON.stringify(space, null, 2)}`,
+        });
         if (confirmed) {
             break;
         }
@@ -143,7 +145,7 @@ const updateConfigSpace = async (): Promise<APIWrapper<undefined>> => {
             defaultValue: updatingSpace.deliveryToken,
         });
         const confirmed = await Utils.yesNoPrompt({
-            question: `Confirm you would like to save these updates: ${JSON.stringify(updatingSpace)}`,
+            question: `Confirm you would like to save these updates: ${JSON.stringify(updatingSpace, null, 2)}`,
         });
         if (confirmed) {
             const updatedConfig = {

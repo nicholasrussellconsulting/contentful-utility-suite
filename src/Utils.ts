@@ -162,7 +162,7 @@ const initGQLFieldsDir = (): APIWrapper<undefined> => {
         fields: ["name", "slug"],
     };
     try {
-        writeFileSync(GQL_FIELDS_DIR + "example.json", JSON.stringify(example));
+        writeFileSync(GQL_FIELDS_DIR + "example.json", JSON.stringify(example, null, 2));
     } catch (e) {
         return {
             error: true,
@@ -266,6 +266,16 @@ const writeGraphQLResponse = (content: GraphQLNode[], collectionsKey: string): A
     };
 };
 
+export function toKebabCase(input?: string): string {
+    return (
+        input
+            ?.trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9\s]/g, "")
+            .replace(/\s+/g, "-") || ""
+    );
+}
+
 export const Utils = {
     fileExistsSync,
     createFileSync,
@@ -279,4 +289,5 @@ export const Utils = {
     initGQLFieldsDir,
     selectEnvironmentIDs,
     writeGraphQLResponse,
+    toKebabCase,
 };
