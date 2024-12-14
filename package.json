@@ -26,5 +26,9 @@
         "csv-parser": "^3.0.0",
         "inquirer": "^12.2.0"
     },
-    "type": "module"
+    "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/nlowen233/contentful-utility-suite"
+    }
 }
