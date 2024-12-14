@@ -1,5 +1,7 @@
-import * as contentful from "contentful-management";
+import contentful from "contentful-management";
 import { Space } from "./types.js";
+
+const { createClient } = contentful;
 
 export type RecursivelyGatherSystemIDsRes = {
     entries: string[];
@@ -17,7 +19,7 @@ export const recursivelyGatherSystemIDs = async ({
     parentIDs,
     space,
 }: RecursivelyGatherSystemIDsParams): Promise<RecursivelyGatherSystemIDsRes> => {
-    const client = contentful.createClient({
+    const client = createClient({
         accessToken: space.managementToken as string,
     });
     let c_space: contentful.Space | undefined = undefined;
