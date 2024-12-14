@@ -6,6 +6,8 @@ import { readdirSync, statSync } from "fs";
 import { join } from "path";
 import { GQL_FIELDS_DIR, GQL_OUTPUT_DIR } from "./constants.js";
 import { ContentfulManagementAPI } from "./ContentfulManagementAPI.js";
+import { renameSync } from "fs";
+import { parse, format } from "path";
 
 const fileExistsSync = (filePath: string): boolean => {
     return existsSync(filePath);
@@ -266,7 +268,7 @@ const writeGraphQLResponse = (content: GraphQLNode[], collectionsKey: string): A
     };
 };
 
-export function toKebabCase(input?: string): string {
+const toKebabCase = (input?: string): string => {
     return (
         input
             ?.trim()
@@ -274,7 +276,14 @@ export function toKebabCase(input?: string): string {
             .replace(/[^a-z0-9\s]/g, "")
             .replace(/\s+/g, "-") || ""
     );
-}
+};
+
+const renameToCjs = (path: string) => {
+    const { dir, name } = parse(path);
+    const newFilePath = format({ dir, name, ext: ".cjs" });
+    renameSync(path, newFilePath);
+    return newFilePath;
+};
 
 export const Utils = {
     fileExistsSync,
@@ -290,4 +299,5 @@ export const Utils = {
     selectEnvironmentIDs,
     writeGraphQLResponse,
     toKebabCase,
+    renameToCjs,
 };

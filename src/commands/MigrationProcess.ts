@@ -58,9 +58,10 @@ export const MigrationProcess = async () => {
             console.log(chalk.red(`Error retrieving migration file: ${migrationFileRes.errorMessage}`));
             return;
         }
+        const cjsFile = Utils.renameToCjs(migrationFileRes.res as string);
         const contentTypeMigrationSuccess = MergeToolUtils.runMigrationScript({
             environmentID: targetEnvID,
-            fileLocation: migrationFileRes.res as string,
+            fileLocation: cjsFile,
             space,
         });
         if (!contentTypeMigrationSuccess) {
