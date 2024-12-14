@@ -1,7 +1,14 @@
 import chalk from "chalk";
-import { CONFIG_PATH } from "./constants";
 import { APIWrapper, ConfigShape, Space } from "./types";
 import { Utils } from "./Utils";
+import { mkdirSync } from "fs";
+import { join } from "path";
+import { homedir } from "os";
+import { APP_NAME } from "./constants";
+
+const CONFIG_DIR = process.platform === "win32" ? join(homedir(), "AppData", "Roaming", APP_NAME) : join(homedir(), ".config", APP_NAME);
+mkdirSync(CONFIG_DIR, { recursive: true });
+const CONFIG_PATH = join(CONFIG_DIR, "config.json");
 
 let projectConfig: ConfigShape | undefined = undefined;
 

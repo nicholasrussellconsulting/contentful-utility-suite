@@ -1,4 +1,3 @@
-export const CONFIG_PATH = "./config.json";
 export const CONTENTFUL_API_URL = "https://api.contentful.com";
 export const DIFF_FOLDER = "./output/diff/";
 export const CONTENT_TYPE_MIGRATION_DIR = "./migrations/";
@@ -9,3 +8,4 @@ export const GQL_FIELDS_DIR = "./gqlfields/";
 export const GQL_OUTPUT_DIR = "./output/content/";
 export const CONTENTFUL_URL = "https://app.contentful.com";
 export const SEARCH_RESULT_DIFF = "./output/search-results/";
+export const APP_NAME = "contentful-utility-suite";
