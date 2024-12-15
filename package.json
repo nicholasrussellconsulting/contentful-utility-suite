@@ -1,6 +1,6 @@
 {
     "name": "contentful-utility-suite",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Suite of utilities for Contentful CMS",
     "scripts": {
         "start": "tsx src/index.ts",
@@ -30,5 +30,23 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/nlowen233/contentful-utility-suite"
-    }
+    },
+    "keywords": [
+        "contentful",
+        "contentful-cli",
+        "cms",
+        "contentful-tools",
+        "content-migration",
+        "bulk-export",
+        "content-search",
+        "headless-cms",
+        "content-management",
+        "cli-tool",
+        "contentful-migration",
+        "contentful-export",
+        "contentful-search",
+        "contentful-automation",
+        "api",
+        "content"
+    ]
 }
