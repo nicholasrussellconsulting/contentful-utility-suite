@@ -1,14 +1,9 @@
-# Contentful Utility Suite 1.0
+# Contentful Utility Suite 1.x.x
 
-  
+[![npm version](https://badge.fury.io/js/nrc-next-carousel.svg)](https://www.npmjs.com/package/contentful-utility-suite)
 
 Contentful Utility Suite is a CLI tool designed to simplify and streamline common tasks in Contentful. With this tool, you can migrate content, export content collections, and search for specific content across environments or aliases in your Contentful space.
 
-  
-
----
-
-  
 
 ## Features
 
@@ -38,9 +33,9 @@ Export a specific collection of content from a specified environment or alias fo
 
 	"fields": [
 
-	"name",
+		"name",
 
-	"slug"
+		"slug"
 
 	]
 
@@ -65,11 +60,6 @@ Search all content in a specific environment or alias for a given search string.
 **Notes:**
 - Search strings are **case insensitive**
 
-
----
-
-  
-
 ## Installation
 
   
@@ -84,16 +74,21 @@ To install the Contentful Utility Suite globally:
 
 ## Usage
 
-  
-
 `contentful-utility-suite`
 
-  
 
 **Notes:**
 - Make sure your API keys have the proper alias/environment permissions to perform these tasks.
 - All imports and exports will be handled in the working directory (the directory in which the tool is being run).
 - The config file is global. You will be prompted to create a config if you don't have one initialized.
+
+## Support
+
+If you would consider supporting me I would be very appreciative. At my highest subscription tier, I offer face-to-face support and bug prioritization. 
+
+[![GitHub Sponsors](https://img.shields.io/badge/sponsor-GitHub-blue?logo=github)](https://github.com/sponsors/nlowen233)
+
+For more general consulting related to Next.js/Vercel/React/TypeScript/Contentful, please don't hesitate to setup a free intro consultation on [my site](https://www.nicholasrussellconsulting.com/).
 
 ## License
 
