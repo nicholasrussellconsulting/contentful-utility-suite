@@ -4,6 +4,8 @@
 
 Contentful Utility Suite is a CLI tool designed to simplify and streamline common tasks in Contentful. With this tool, you can migrate content, export content collections, and search for specific content across environments or aliases in your Contentful space.
 
+If you just stumbled onto this package from Google, please find my [Medium article](https://medium.com/@nicholasrussellconsulting/my-contentful-migration-process-and-a-present-to-help-you-facilitate-it-b9ab07fabe06) on this package for more context.
+
 
 ## Features
 

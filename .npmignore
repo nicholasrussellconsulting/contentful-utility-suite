@@ -1,0 +1,5 @@
+scripts
+src
+.prettierrc
+tsconfig.json
+contentful-utility-suite-*.tgz
