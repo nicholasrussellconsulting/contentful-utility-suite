@@ -1,6 +1,6 @@
 {
     "name": "contentful-utility-suite",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "Suite of utilities for Contentful CMS",
     "scripts": {
         "start": "tsx src/index.ts",

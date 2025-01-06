@@ -3,3 +3,8 @@ src
 .prettierrc
 tsconfig.json
 contentful-utility-suite-*.tgz
+migrations
+gqlfields
+output
+config.json
+imports.json
