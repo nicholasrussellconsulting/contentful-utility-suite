@@ -20,7 +20,7 @@ export type EnvironmentResponse = {
     limit: number;
     skip: number;
     sys: SystemType;
-    items: EnvironmentItem[];
+    items?: EnvironmentItem[];
 };
 
 export type SystemType = {
@@ -91,6 +91,7 @@ export type GQLFieldsJSONWithFileName = GQLFieldsJSON & { fileName: string };
 
 export type ContentExport = {
     entries: Entry[];
+    fileLocation: string;
 };
 
 export type Entry = {

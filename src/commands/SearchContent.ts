@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { ConfigUtils } from "../ConfigUtils.js";
-import { exportFullSpace } from "../exportFullSpace.js";
+import { exportFullSpaceEnvironment } from "../exportFullSpaceEnvironment.js";
 import { Utils } from "../Utils.js";
 import { searchEntries } from "../searchEntries.js";
 import { writeFileSync, mkdirSync } from "fs";
@@ -13,9 +13,10 @@ export const SearchContent = async () => {
     const environmentIDRes = await Utils.selectEnvironmentIDs({ space, selectOne: true });
     if (environmentIDRes.error) {
         console.log(chalk.red(`There was an error selecting environment ID: ${environmentIDRes.errorMessage}`));
+        return;
     }
     const environmentID = environmentIDRes.res?.id as string;
-    const entriesRes = exportFullSpace({ environmentID, space });
+    const entriesRes = exportFullSpaceEnvironment({ environmentID, space });
     if (entriesRes.error) {
         console.log(chalk.red(`Error fetching content for search: ${entriesRes.errorMessage}`));
         return;

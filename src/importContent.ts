@@ -17,7 +17,7 @@ export const importContent = ({ environmentID, path, space }: ImportContentParam
     }
     const command = "npx";
     const args = [
-        "contentful",
+        "contentful-cli",
         "space",
         "import",
         "--space-id",

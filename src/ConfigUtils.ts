@@ -83,7 +83,18 @@ const createConfigSpace = async (): Promise<Space> => {
             question: `Confirm the following config is correct:\n ${JSON.stringify(space, null, 2)}`,
         });
         if (confirmed) {
-            break;
+            const testAuthRes = await Utils.testSpaceAuthorization(space as Space);
+            if (testAuthRes.error) {
+                const confirmedError = await Utils.yesNoPrompt({
+                    question: `Your credentials resulted in errors, they are almost certainly incorrect. Would you like to add this space into the config anyway?`,
+                    _default: false,
+                });
+                if (confirmedError) {
+                    break;
+                }
+            } else {
+                break;
+            }
         }
     }
     return space as Space;

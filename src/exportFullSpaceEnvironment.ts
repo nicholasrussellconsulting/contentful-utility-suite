@@ -9,8 +9,9 @@ export type ExportSpaceParams = {
     environmentID: string;
 };
 
-export const exportFullSpace = ({ environmentID, space }: ExportSpaceParams): APIWrapper<ContentExport> => {
+export const exportFullSpaceEnvironment = ({ environmentID, space }: ExportSpaceParams): APIWrapper<ContentExport> => {
     mkdirSync(EXPORT_CONTENT_DIR, { recursive: true });
+    const exportedFileName = EXPORT_ALL_CONTENT_FILE_NAME({ envID: environmentID, spaceID: space.spaceID });
     if (!space.managementToken) {
         return {
             error: true,
@@ -20,7 +21,7 @@ export const exportFullSpace = ({ environmentID, space }: ExportSpaceParams): AP
     }
     const command = "npx";
     const args = [
-        "contentful",
+        "contentful-cli",
         "space",
         "export",
         "--space-id",
@@ -32,7 +33,7 @@ export const exportFullSpace = ({ environmentID, space }: ExportSpaceParams): AP
         "--content-only",
         "--skip-tags",
         "--content-file",
-        EXPORT_ALL_CONTENT_FILE_NAME,
+        exportedFileName,
         "--export-dir",
         EXPORT_CONTENT_DIR,
     ];
@@ -46,11 +47,14 @@ export const exportFullSpace = ({ environmentID, space }: ExportSpaceParams): AP
             errorMessage: "Content export failed",
         };
     }
-    const fileContent = Utils.readFile(EXPORT_CONTENT_DIR + EXPORT_ALL_CONTENT_FILE_NAME);
+    const fileContent = Utils.readFile(EXPORT_CONTENT_DIR + exportedFileName);
     try {
         return {
             error: false,
-            res: JSON.parse(fileContent),
+            res: {
+                entries: JSON.parse(fileContent),
+                fileLocation: EXPORT_CONTENT_DIR + exportedFileName,
+            },
         };
     } catch (e) {
         return {

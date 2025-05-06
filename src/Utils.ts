@@ -1,6 +1,15 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync, promises as fsPromises } from "fs";
 import { dirname } from "path";
-import { APIWrapper, FetchGraphQLParams, GQLFieldsJSON, GQLFieldsJSONWithFileName, GraphQLNode, GraphQLResponse, Space } from "./types.js";
+import {
+    APIWrapper,
+    ConfigShape,
+    FetchGraphQLParams,
+    GQLFieldsJSON,
+    GQLFieldsJSONWithFileName,
+    GraphQLNode,
+    GraphQLResponse,
+    Space,
+} from "./types.js";
 import inquirer from "inquirer";
 import { readdirSync, statSync } from "fs";
 import { join } from "path";
@@ -8,6 +17,7 @@ import { GQL_FIELDS_DIR, GQL_OUTPUT_DIR } from "./constants.js";
 import { ContentfulManagementAPI } from "./ContentfulManagementAPI.js";
 import { renameSync } from "fs";
 import { parse, format } from "path";
+import chalk from "chalk";
 
 const fileExistsSync = (filePath: string): boolean => {
     return existsSync(filePath);
@@ -204,20 +214,39 @@ const selectEnvironmentIDs = async ({
             errorMessage: `There was an error fetching environment data from Contentful: ${environmentDataRes.errorMessage}`,
         };
     }
+    const items = environmentDataRes.res?.items || [];
+    if (items?.length < 2 && !selectOne) {
+        return {
+            error: true,
+            errorMessage: `Your selected space must have at least 2 environments to use this command`,
+        };
+    }
     const envOrAliasChoice = await Utils.choicesPrompt({
         message: "Would you like to use environments or aliases?",
         choices: ["Environments", "Aliases"],
     });
     let environmentChoices: string[] = [];
     if (envOrAliasChoice === "Aliases") {
-        const aliases = (environmentDataRes.res?.items
+        const aliases = (items
             .map((item) => item.sys.aliases?.map((alias) => alias.sys.id))
             .flat()
             .filter((alias) => !!alias) || []) as string[];
         environmentChoices = Array.from(new Set(aliases));
     } else {
-        const environments = environmentDataRes.res?.items.map((item) => item.name);
+        const environments = items.map((item) => item.name);
         environmentChoices = Array.from(new Set(environments));
+    }
+    if (environmentChoices.length < 1) {
+        return {
+            error: true,
+            errorMessage: `You have no available ${envOrAliasChoice === "Aliases" ? "aliases" : "environments"}`,
+        };
+    }
+    if (environmentChoices.length < 2 && !selectOne) {
+        return {
+            error: true,
+            errorMessage: `You need at least 2 ${envOrAliasChoice === "Aliases" ? "aliases" : "environments"}`,
+        };
     }
     const sourceEnvID = await Utils.choicesPrompt({
         choices: environmentChoices,
@@ -285,6 +314,81 @@ const renameToCjs = (path: string) => {
     return newFilePath;
 };
 
+const testSpaceAuthorization = async ({ spaceID, managementToken, deliveryToken }: Space): Promise<APIWrapper<true>> => {
+    let possibleAuthIssue = false;
+    console.log(chalk.yellow("Testing your information against Contentful..."));
+    try {
+        const managementRes = await fetch(`https://api.contentful.com/spaces/${spaceID}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${managementToken}`,
+            },
+        });
+        if (managementRes.status !== 200) {
+            if (managementRes.status === 401) {
+                possibleAuthIssue = true;
+                console.log(chalk.red("Your management token test failed ❌"));
+            } else {
+                console.log(chalk.red(`Your space ID: ${spaceID} is (most likely) incorrect ❌`));
+            }
+            throw new Error(`Management step failure`);
+        }
+        const deliveryRes = await fetch(`https://cdn.contentful.com/spaces/${spaceID}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${deliveryToken}`,
+            },
+        });
+        if (deliveryRes.status !== 200) {
+            possibleAuthIssue = true;
+            console.log(chalk.red("Your delivery token test failed ❌"));
+            throw new Error(`Delivery step failure`);
+        }
+        console.log(chalk.green("All tests passed, your Space is configured properly ✅"));
+        return {
+            error: false,
+            res: true,
+        };
+    } catch (err) {
+        if (possibleAuthIssue) {
+            console.log(
+                chalk.yellow(
+                    `Please check if your API keys have expired: https://app.contentful.com/spaces/${spaceID}/api/keys and https://app.contentful.com/spaces/${spaceID}/api/cma_tokens`,
+                ),
+            );
+        }
+        return {
+            error: true,
+            errorMessage: (err as Error).message,
+        };
+    }
+};
+
+const getAllJsonFilesInDir = (directory: string): APIWrapper<string[]> => {
+    try {
+        const files = readdirSync(directory);
+        const jsonFiles = files
+            .map((file) => join(directory, file))
+            .filter((fullPath) => {
+                const isFile = statSync(fullPath).isFile();
+                const isJson = fullPath.endsWith(".json");
+                return isFile && isJson;
+            });
+
+        return {
+            error: false,
+            res: jsonFiles,
+        };
+    } catch (e) {
+        return {
+            error: true,
+            errorMessage: (e as Error).message,
+        };
+    }
+};
+
 export const Utils = {
     fileExistsSync,
     createFileSync,
@@ -300,4 +404,6 @@ export const Utils = {
     writeGraphQLResponse,
     toKebabCase,
     renameToCjs,
+    testSpaceAuthorization,
+    getAllJsonFilesInDir,
 };

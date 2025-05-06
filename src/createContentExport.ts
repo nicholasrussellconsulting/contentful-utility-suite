@@ -35,7 +35,7 @@ export const createContentExport = async ({
     const res = await recursivelyGatherSystemIDs({ environmentID, parentIDs, space });
     const command = "npx";
     const args = [
-        "contentful",
+        "contentful-cli",
         "space",
         "export",
         "--space-id",

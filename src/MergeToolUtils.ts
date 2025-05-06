@@ -65,7 +65,7 @@ export const runMigrationScript = ({ fileLocation, environmentID, space }: Space
     }
     const command = "npx";
     const args = [
-        "contentful",
+        "contentful-cli",
         "space",
         "migration",
         "--space-id",
