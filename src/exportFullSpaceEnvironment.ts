@@ -30,8 +30,6 @@ export const exportFullSpaceEnvironment = ({ environmentID, space }: ExportSpace
         space.managementToken,
         "--environment-id",
         environmentID,
-        "--content-only",
-        "--skip-tags",
         "--content-file",
         exportedFileName,
         "--export-dir",
