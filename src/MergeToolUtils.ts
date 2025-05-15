@@ -25,7 +25,7 @@ const generateContentTypeDiff = ({ sourceEnvID, space, targetEnvID }: SpaceAndTa
         };
     }
     const fileName = DIFF_FOLDER + `diff-${Date.now()}.txt`;
-    const command = `npx contentful merge show --management-token ${space.managementToken} --space-id ${space.spaceID} --se ${sourceEnvID} --te ${targetEnvID} > ${fileName}`;
+    const command = `npx contentful-cli merge show --management-token ${space.managementToken} --space-id ${space.spaceID} --se ${sourceEnvID} --te ${targetEnvID} > ${fileName}`;
     mkdirSync(DIFF_FOLDER, { recursive: true });
     execSync(command);
     if (Utils.fileExistsSync(fileName)) {
@@ -51,7 +51,7 @@ const generateMigrationScript = ({ space, sourceEnvID, targetEnvID }: SpaceAndTa
                 "Your Space config is missing the Management Token. You cannot complete this functionality without this parameter.",
         };
     }
-    const command = `npx contentful merge export --management-token ${space.managementToken} --space-id ${space.spaceID} --se ${sourceEnvID} --te ${targetEnvID}`;
+    const command = `npx contentful-cli merge export --management-token ${space.managementToken} --space-id ${space.spaceID} --se ${sourceEnvID} --te ${targetEnvID}`;
     execSync(command);
 };
 
