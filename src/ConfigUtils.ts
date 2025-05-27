@@ -124,7 +124,8 @@ const removeConfigSpace = async (): Promise<APIWrapper<undefined>> => {
             error: false,
         };
     }
-    const index = projectConfig?.spaces.findIndex((space) => space.name === choice) || -1;
+    const matchedSpace = projectConfig?.spaces.findIndex((space) => space.name === choice);
+    const index = matchedSpace === undefined ? -1 : matchedSpace;
     if (index === -1) {
         throw new Error("Unexpected issue occurred most likely due to a bug in the code");
     }
