@@ -10,8 +10,11 @@ export const ExportFullSpaceEnvironment = async () => {
         console.log(chalk.red(`There was an error selecting environment ID: ${environmentIDRes.errorMessage}`));
         return;
     }
+    const willDownloadAssets = await Utils.yesNoPrompt({
+        question: "Download assets? (Otherwise you will only be exporting URLs for your assets and not the actual files)",
+    });
     const environmentID = environmentIDRes.res?.id as string;
-    const exportRes = exportFullSpaceEnvironment({ space, environmentID });
+    const exportRes = exportFullSpaceEnvironment({ space, environmentID, willDownloadAssets });
     if (exportRes.error) {
         console.log(chalk.red(`Error creating a full export: ${exportRes.errorMessage}`));
         return;

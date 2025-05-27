@@ -41,10 +41,15 @@ export const ImportFullSpaceEnvironment = async () => {
     if (!confirmed) {
         return;
     }
+    const willUploadAssets = await Utils.yesNoPrompt({
+        question: "Upload assets? (You only need to upload assets if you are importing across spaces)",
+        _default: false,
+    });
     const importSuccess = importContent({
         environmentID,
         space,
         path: fileChoice,
+        willUploadAssets,
     });
     if (importSuccess) {
         console.log(chalk.green(`Successfully imported into the ${environmentID} environment!`));

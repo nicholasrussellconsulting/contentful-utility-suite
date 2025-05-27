@@ -7,9 +7,10 @@ import { mkdirSync } from "fs";
 export type ExportSpaceParams = {
     space: Space;
     environmentID: string;
+    willDownloadAssets?: boolean;
 };
 
-export const exportFullSpaceEnvironment = ({ environmentID, space }: ExportSpaceParams): APIWrapper<ContentExport> => {
+export const exportFullSpaceEnvironment = ({ environmentID, space, willDownloadAssets }: ExportSpaceParams): APIWrapper<ContentExport> => {
     mkdirSync(EXPORT_CONTENT_DIR, { recursive: true });
     const exportedFileName = EXPORT_ALL_CONTENT_FILE_NAME({ envID: environmentID, spaceID: space.spaceID });
     if (!space.managementToken) {
@@ -35,6 +36,9 @@ export const exportFullSpaceEnvironment = ({ environmentID, space }: ExportSpace
         "--export-dir",
         EXPORT_CONTENT_DIR,
     ];
+    if (willDownloadAssets) {
+        args.push("--download-assets");
+    }
     const result = spawnSync(command, args, {
         stdio: "inherit",
         shell: true,

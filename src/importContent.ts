@@ -5,9 +5,10 @@ export type ImportContentParams = {
     space: Space;
     environmentID: string;
     path: string;
+    willUploadAssets?: boolean;
 };
 
-export const importContent = ({ environmentID, path, space }: ImportContentParams) => {
+export const importContent = ({ environmentID, path, space, willUploadAssets }: ImportContentParams) => {
     if (!space.managementToken) {
         return {
             error: true,
@@ -29,7 +30,9 @@ export const importContent = ({ environmentID, path, space }: ImportContentParam
         "--content-file",
         path,
     ];
-
+    if (willUploadAssets) {
+        args.push("--download-assets");
+    }
     const result = spawnSync(command, args, {
         stdio: "inherit",
         shell: true,
