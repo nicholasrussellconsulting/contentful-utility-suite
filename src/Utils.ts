@@ -221,31 +221,25 @@ const selectEnvironmentIDs = async ({
             errorMessage: `Your selected space must have at least 2 environments to use this command`,
         };
     }
-    const envOrAliasChoice = await Utils.choicesPrompt({
-        message: "Would you like to use environments or aliases?",
-        choices: ["Environments", "Aliases"],
-    });
-    let environmentChoices: string[] = [];
-    if (envOrAliasChoice === "Aliases") {
-        const aliases = (items
+    const aliases = (
+        items
             .map((item) => item.sys.aliases?.map((alias) => alias.sys.id))
             .flat()
-            .filter((alias) => !!alias) || []) as string[];
-        environmentChoices = Array.from(new Set(aliases));
-    } else {
-        const environments = items.map((item) => item.name);
-        environmentChoices = Array.from(new Set(environments));
-    }
+            .filter((alias) => !!alias) || []
+    ).map((alias) => `Alias - ${alias}`) as string[];
+    const aliasChoices = Array.from(new Set(aliases));
+    const environments = items.map((item) => item.name);
+    const environmentChoices = Array.from(new Set([...environments, ...aliasChoices]));
     if (environmentChoices.length < 1) {
         return {
             error: true,
-            errorMessage: `You have no available ${envOrAliasChoice === "Aliases" ? "aliases" : "environments"}`,
+            errorMessage: `You have no available environments`,
         };
     }
     if (environmentChoices.length < 2 && !selectOne) {
         return {
             error: true,
-            errorMessage: `You need at least 2 ${envOrAliasChoice === "Aliases" ? "aliases" : "environments"}`,
+            errorMessage: `You need at least 2 environments`,
         };
     }
     const sourceEnvID = await Utils.choicesPrompt({
