@@ -158,3 +158,8 @@ export type Fields = {
 export type LocalizedField<T> = {
     [locale: string]: T;
 };
+
+export type AliasEntry = {
+    alias: string;
+    aliasedEnvironment: string;
+};

@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync, promises as fsPromises } from "fs";
 import { dirname } from "path";
 import {
+    AliasEntry,
     APIWrapper,
-    ConfigShape,
     FetchGraphQLParams,
     GQLFieldsJSON,
     GQLFieldsJSONWithFileName,
@@ -221,29 +221,37 @@ const selectEnvironmentIDs = async ({
             errorMessage: `Your selected space must have at least 2 environments to use this command`,
         };
     }
-    const aliases = (
-        items
-            .map((item) => item.sys.aliases?.map((alias) => alias.sys.id))
-            .flat()
-            .filter((alias) => !!alias) || []
-    ).map((alias) => `Alias - ${alias}`) as string[];
+    const aliases = (items
+        .map((item) => item.sys.aliases?.map((alias) => alias.sys.id))
+        .flat()
+        .filter((alias) => !!alias) || []) as string[];
     const aliasChoices = Array.from(new Set(aliases));
-    const environments = items.map((item) => item.name);
-    const environmentChoices = Array.from(new Set([...environments, ...aliasChoices]));
-    if (environmentChoices.length < 1) {
+    const aliasMap: AliasEntry[] = Array.from(
+        new Map(
+            items.flatMap((item) => [
+                ...(item.sys.aliases ?? []).map((alias) => [alias.sys.id, item.sys.id] as const),
+                ...(item.sys.aliasedEnvironment ? [[item.sys.id, item.sys.aliasedEnvironment.sys.id] as const] : []),
+            ]),
+        ),
+        ([alias, aliasedEnvironment]) => ({ alias, aliasedEnvironment }),
+    );
+    const environments = Array.from(new Set(items.map((item) => item.name)));
+    if (environments.length < 1) {
         return {
             error: true,
             errorMessage: `You have no available environments`,
         };
     }
-    if (environmentChoices.length < 2 && !selectOne) {
+    if (environments.length === 1 && !selectOne) {
         return {
             error: true,
             errorMessage: `You need at least 2 environments`,
         };
     }
+    const environmentChoices = [...environments, ...aliasChoices];
+    const environmentChoicesWithAliasDisplayed = [...environments, ...aliasChoices.map((alias) => `Alias - ${alias}`)];
     const sourceEnvID = await Utils.choicesPrompt({
-        choices: environmentChoices,
+        choices: environmentChoicesWithAliasDisplayed,
         message: selectOne ? "Select an environment" : "Select source environment",
     });
     if (selectOne) {
@@ -254,12 +262,25 @@ const selectEnvironmentIDs = async ({
             },
         };
     }
-    const indexOfSource = environmentChoices.findIndex((env) => env === sourceEnvID);
+    const indexOfSource = environmentChoicesWithAliasDisplayed.findIndex((env) => env === sourceEnvID);
     if (indexOfSource === -1) {
         throw new Error(`Unexpected error attempting to choose environments. This is most likely a code error.`);
     }
-    const remainingChoices = [...environmentChoices.slice(0, indexOfSource), ...environmentChoices.slice(indexOfSource + 1)];
-    const targetEnvID = await Utils.choicesPrompt({ choices: remainingChoices, message: "Select target environment" });
+    const environmentOrAliasToRemove = environmentChoices[indexOfSource];
+    const choiceIsAlias = !!aliasMap.find((entry) => entry.alias === environmentOrAliasToRemove);
+    const envToRemove = choiceIsAlias
+        ? aliasMap.find((entry) => entry.alias === environmentOrAliasToRemove)?.aliasedEnvironment
+        : environmentOrAliasToRemove;
+    const choicesWithMatchingAliasedEnvRemoved = environmentChoices.filter((env) => {
+        const pivotIsAlias = !!aliasMap.find((entry) => entry.alias === env);
+        const pivotedEnvironment = pivotIsAlias ? aliasMap.find((entry) => entry.alias === env)?.aliasedEnvironment : env;
+        if (pivotedEnvironment === undefined) {
+            throw new Error(`Unexpected indexing alias. This is most likely a code error.`);
+        }
+        return pivotedEnvironment !== envToRemove;
+    });
+    const safeChoicesWithAliasLabels = choicesWithMatchingAliasedEnvRemoved.map((env) => (aliases.includes(env) ? `Alias - ${env}` : env));
+    const targetEnvID = await Utils.choicesPrompt({ choices: safeChoicesWithAliasLabels, message: "Select target environment" });
     return {
         error: false,
         res: {
