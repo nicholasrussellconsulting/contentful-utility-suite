@@ -11,7 +11,9 @@ import { ExportFullSpaceEnvironment } from "./commands/ExportFullSpaceEnvironmen
 import { TestAuthentication } from "./commands/TestAuthentication.js";
 import { ImportFullSpaceEnvironment } from "./commands/ImportFullSpaceEnvironment.js";
 import updateNotifier from "update-notifier";
-import packageJson from "../package.json" with { type: "json" };
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+const packageJson = require("../package.json");
 
 updateNotifier({ pkg: packageJson, updateCheckInterval: 0 }).notify();
 
