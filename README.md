@@ -85,7 +85,7 @@ To install the Contentful Utility Suite globally:
 
 ## Support
 
-If you're looking for consultation regarding best practices when migrating content in Contentful from environment to environment, Space to Space, or even other CMS to Contentful, you can check out my [Contentful Content Migration Strategy & Implementation Package](https://www.nicholasrussellconsulting.com/contentful-migration-package) on my consulting site. For free resources please see my [Medium Articles](https://medium.com/@nicholasrussellconsulting).
+If you're looking for someone to set up resilient processes for promoting content, moving it across environments or spaces, or migrating it from another CMS into Contentful, check out my [Contentful Content Migration Strategy & Implementation Package](https://www.nicholasrussellconsulting.com/contentful-migration-package) on my consulting site. For free resources, see my [Medium articles](https://medium.com/@nicholasrussellconsulting).
 
 ## Support Me
 
