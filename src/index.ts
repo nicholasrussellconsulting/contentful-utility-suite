@@ -11,6 +11,9 @@ import { ExportFullSpaceEnvironment } from "./commands/ExportFullSpaceEnvironmen
 import { TestAuthentication } from "./commands/TestAuthentication.js";
 import { ImportFullSpaceEnvironment } from "./commands/ImportFullSpaceEnvironment.js";
 import updateNotifier from "update-notifier";
+import packageJson from "../package.json" with { type: "json" };
+
+updateNotifier({ pkg: packageJson, updateCheckInterval: 0 }).notify();
 
 const commandIndex = {
     "Update Config": UpdateConfig,
@@ -24,10 +27,6 @@ const commandIndex = {
 };
 
 async function main() {
-    const notifier = updateNotifier({ pkg: { name: "contentful-utility-suite", version: "1.3.0" }, updateCheckInterval: 0 });
-    notifier.notify();
-
-    console.log(chalk.blue("Welcome to Contentful Utility Suite"));
     await ConfigUtils.checkAndInitConfig();
     while (true) {
         const choice = await Utils.choicesPrompt({
