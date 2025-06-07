@@ -249,7 +249,7 @@ const selectEnvironmentIDs = async ({
         };
     }
     const environmentChoices = [...environments, ...aliasChoices];
-    const environmentChoicesWithAliasDisplayed = [...environments, ...aliasChoices.map((alias) => `Alias - ${alias}`)];
+    const environmentChoicesWithAliasDisplayed = [...environments, ...aliasChoices];
     const sourceEnvID = await Utils.choicesPrompt({
         choices: environmentChoicesWithAliasDisplayed,
         message: selectOne ? "Select an environment" : "Select source environment",
@@ -279,8 +279,7 @@ const selectEnvironmentIDs = async ({
         }
         return pivotedEnvironment !== envToRemove;
     });
-    const safeChoicesWithAliasLabels = choicesWithMatchingAliasedEnvRemoved.map((env) => (aliases.includes(env) ? `Alias - ${env}` : env));
-    const targetEnvID = await Utils.choicesPrompt({ choices: safeChoicesWithAliasLabels, message: "Select target environment" });
+    const targetEnvID = await Utils.choicesPrompt({ choices: choicesWithMatchingAliasedEnvRemoved, message: "Select target environment" });
     return {
         error: false,
         res: {

@@ -2,45 +2,76 @@
 
 [![npm version](https://badge.fury.io/js/contentful-utility-suite.svg)](https://www.npmjs.com/package/contentful-utility-suite)
 
-Contentful Utility Suite is a CLI tool designed to simplify and streamline common tasks in Contentful. With this tool, you can migrate content, export content collections, and search for specific content across environments or aliases in your Contentful space.
+Contentful Utility Suite is a CLI tool designed to simplify and streamline common tasks in Contentful. With this tool, you can migrate content from environment to environment or even Space to Space, you can export specific content collections, you can import and export full Spaces, and you can search for specific content across environments or aliases in your Contentful space.
 
-If you just stumbled onto this package from Google, please find my [Medium article](https://medium.com/@nicholasrussellconsulting/my-contentful-migration-process-and-a-present-to-help-you-facilitate-it-b9ab07fabe06) on this package for more context.
+If you just stumbled onto this package from Google, please find my [Medium article](https://medium.com/@nicholasrussellconsulting/my-contentful-migration-process-and-a-present-to-help-you-facilitate-it-b9ab07fabe06) on this package for a full walkthrough on how to promote content from development to production environments in Contentful.
 
-## Features
+## Commands
 
-### 1. Migrate Selected Content
+### Update Config
 
-Easily migrate specific content from one environment or alias to another.
+The config for this package is global, it's not based in the working directory. You can store multiple Spaces in the config. The CLI tool will test the authentication of your Space credentials upon entering them, if there are errors, the CLI tool will alert you and prompt you to fix (you can bypass).
 
-### 2. Export Content Collections
+#### Options
+
+- Add Space
+- Update Space
+- Remove Space
+
+If you would prefer to update the config with a text editor, you can find the global config file here:
+
+| Platform | Config File Path                                                          |
+| -------- | ------------------------------------------------------------------------- |
+| Windows  | `C:\Users\Your-User\AppData\Roaming\contentful-utility-suite\config.json` |
+| macOS    | `/Users/your-user/.config/contentful-utility-suite/config.json`           |
+| Linux    | `/home/your-user/.config/contentful-utility-suite/config.json`            |
+
+### Migrate Selected Content
+
+This command is documented in detail in both my [Medium](<(https://medium.com/@nicholasrussellconsulting/my-contentful-migration-process-and-a-present-to-help-you-facilitate-it-b9ab07fabe06)>) article and in my [Contentful + Next.js Starter Kit](https://nicholasrussell0.gumroad.com/l/contentful-next-15-starter-kit). For the most in depth guide on enterprise level and free tier content promotions, you're best off purchasing the starter kit.
+
+This command allows the user to migrate content from environment to environment in a specific Space. I recommend you use this command for content promotion from your development to production environment. Just like all commands in the CLI tool, you can use both environments and aliases here. You will be able to merge Content Types as well as content.
+
+### Export Content Collections
 
 Export a specific collection of content from a specified environment or alias for further analysis or backup.
 
 - Exports will be created in the working directory.
-
 - The exported collections will follow this format:
 
 ```json
 {
     "collectionsKey": "pageCollection",
-
     "fields": ["name", "slug"]
 }
 ```
 
-- `collectionsKey`: The GraphQL collection key of the content type being exported.
+_This example would export all your `Pages` "name" and "slug" fields_
 
+- `collectionsKey`: The GraphQL collection key of the content type being exported. Your collection key will be a camel-cased version of your Content Type title followed by `Collection`.
 - `fields`: An array of fields to include in the export. Add fields as needed.
 
-The app will initialize with this `example.json` as a template.
+The app will initialize with this `example.json` as a template. When using the command you will be prompted to choose a `.json` file from a directory called `/gqlfields` in your working directory.
 
-### 3. Search All Content
+### Search All Content
 
-Search all content in a specific environment or alias for a given search string.
+You will be prompted to select a Space and then an environment/alias for that Space. The CLI tool will export all content from the chosen environment and will then allow you to run exact string searches on all content (case insensitive).
 
-**Notes:**
+### Export Entire Environment
 
-- Search strings are **case insensitive**
+You can use this command to create backups of an entire environments. These exports can be later be imported to other Spaces through the `Import Environment from JSON` command.
+
+Remember to select "Yes" to download all assets if you plan to use this command to transfer environments across Spaces. If you do not, your assets will still be linked to the original Space. And if that original Space is deleted, all your asset links will be broken.
+
+If you import from an environment that has multiple locales to an environment without locales set up, Contentful with automatically set up those missing locales in the target environment.
+
+### Import Environment from JSON
+
+You can use this command to import full environment export `.json` files generated by `Export Entire Environment` to replace environments across Spaces or within the same Space. I recommend you only use this command when you are transferring environments across Spaces. If you are trying to move content across environments, you should use `Migrate Selected Content`.
+
+### Test Authentication
+
+Use this command to test that your Space ID, management API key, and content API key are all correctly configured in your `.config` file. Sometimes your keys expire and break the other commands. You can use this function to test if authentication is the issue.
 
 ## Installation
 
@@ -52,13 +83,9 @@ To install the Contentful Utility Suite globally:
 
 `contentful-utility-suite`
 
-**Notes:**
-
-- Make sure your API keys have the proper alias/environment permissions to perform these tasks.
-- All imports and exports will be handled in the working directory (the directory in which the tool is being run).
-- The config file is global. You will be prompted to create a config if you don't have one initialized.
-
 ## Support
+
+If you're looking for consultation regarding best practices when migrating content in Contentful from environment to environment, Space to Space, or even other CMS to Contentful, you can check out my [Contentful Content Migration Strategy & Implementation Package](https://www.nicholasrussellconsulting.com/contentful-migration-package) on my consulting site. For free resources please see my [Medium Articles](https://medium.com/@nicholasrussellconsulting).
 
 ## Support Me
 
@@ -77,5 +104,3 @@ Permission to use, copy, modify, and/or distribute this software for any purpose
 THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA, OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE, OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ---
-
-Though not as legally rigorous, when creating this CLI app, there were people renovating the upstairs apartment from 8:00AM-Midnight at various noise levels. These renovations included what sounded like hammering a tile floored and dragging around screeching furniture. As I said, this lasted from the early morning into the night with no regard for the peace of their neighbors. For these reasons, any parties involved in those renovations are hereby barred from using this application in any capacity without exception.
