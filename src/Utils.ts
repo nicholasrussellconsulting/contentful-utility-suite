@@ -201,11 +201,13 @@ async function fetchGraphQL<T>({ space, query, envID }: FetchGraphQLParams): Pro
 export type SelectEnvironmentIDsParams = {
     space: Space;
     selectOne?: boolean;
+    customMessage?: string;
 };
 
 const selectEnvironmentIDs = async ({
     space,
     selectOne,
+    customMessage,
 }: SelectEnvironmentIDsParams): Promise<APIWrapper<{ id: string; id2?: string }>> => {
     const environmentDataRes = await ContentfulManagementAPI.getAllEnvironments(space);
     if (environmentDataRes.error) {
@@ -250,9 +252,10 @@ const selectEnvironmentIDs = async ({
     }
     const environmentChoices = [...environments, ...aliasChoices];
     const environmentChoicesWithAliasDisplayed = [...environments, ...aliasChoices];
+    const message = customMessage || "Select an environment";
     const sourceEnvID = await Utils.choicesPrompt({
         choices: environmentChoicesWithAliasDisplayed,
-        message: selectOne ? "Select an environment" : "Select source environment",
+        message: selectOne ? message : "Select source environment",
     });
     if (selectOne) {
         return {

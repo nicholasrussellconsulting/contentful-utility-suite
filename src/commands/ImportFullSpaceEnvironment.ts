@@ -4,6 +4,7 @@ import { Utils } from "../Utils.js";
 import { importContent } from "../importContent.js";
 import { EXPORT_CONTENT_DIR } from "../constants.js";
 import { mkdirSync } from "fs";
+import { wipeEnvironment } from "../wipeEnvironment.js";
 
 export const ImportFullSpaceEnvironment = async () => {
     mkdirSync(EXPORT_CONTENT_DIR, { recursive: true });
@@ -15,7 +16,7 @@ export const ImportFullSpaceEnvironment = async () => {
         return;
     }
     const space = await ConfigUtils.selectSpace();
-    const environmentIDRes = await Utils.selectEnvironmentIDs({ space, selectOne: true });
+    const environmentIDRes = await Utils.selectEnvironmentIDs({ space, selectOne: true, customMessage: "Select target environment" });
     if (environmentIDRes.error) {
         console.log(chalk.red(`There was an error selecting environment ID: ${environmentIDRes.errorMessage}`));
         return;
@@ -42,9 +43,17 @@ export const ImportFullSpaceEnvironment = async () => {
         return;
     }
     const willUploadAssets = await Utils.yesNoPrompt({
-        question: "Upload assets? (You only need to upload assets if you are importing across spaces)",
+        question: "Upload assets? (You only need to upload assets if you are importing across Spaces)",
         _default: false,
     });
+    const willWipeEnvironment = await Utils.yesNoPrompt({
+        question: `Do you want to delete all existing entries and assets in this environment before importing?`,
+    });
+    if (willWipeEnvironment) {
+        console.log(chalk.yellow(`Deleting all content in Space: ${space.spaceID}, environment: ${environmentID}...`));
+        await wipeEnvironment({ space, environmentID });
+        console.log(chalk.green(`Successfully deleted all content in environment: ${environmentID}!`));
+    }
     const importSuccess = importContent({
         environmentID,
         space,
