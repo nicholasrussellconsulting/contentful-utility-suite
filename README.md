@@ -1,6 +1,7 @@
 # Contentful Utility Suite 1.x.x
 
 [![npm version](https://badge.fury.io/js/contentful-utility-suite.svg)](https://www.npmjs.com/package/contentful-utility-suite)
+▶️ [Watch a demo video](https://www.youtube.com/watch?v=8dJPROMgpr4)
 
 Contentful Utility Suite is a CLI tool designed to simplify and streamline common tasks in Contentful. With this tool, you can migrate content from environment to environment or even Space to Space, you can export specific content collections, you can import and export full Spaces, and you can search for specific content across environments or aliases in your Contentful space.
 
